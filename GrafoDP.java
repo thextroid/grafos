@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -533,7 +534,6 @@ public class GrafoDP {
 				}
 				vis[i][j]=vis[j][i]=true;
 			}
-			
 		}
 		return false;
 	}
@@ -555,24 +555,130 @@ public class GrafoDP {
 			}
 		});
 	}
-	public void esCircular() {
-		Arrays.fill(visited,false);
-		LongitudDeCiclo(0,visited,-1);
+	
+	
+	
+	public boolean esCircular() {
+		if(this.n<=2)return false;
+		int ciclos = contarCiclos(this.n-1);
+		return (ciclos==1);
 	}
-	public boolean LongitudDeCiclo(int vertex,boolean[] visited,int parent) {
-        visited[vertex] = true; 
-        Integer i; 
-        for (int adj = 0; adj < this.n ; adj++) {
-			if( get(vertex,adj) ) {
-				if (!visited[adj]) 
-	            { 
-	                if (LongitudDeCiclo(adj, visited, vertex)) 
-	                    return true; 
-	            }
-				else if (adj != parent) 
-	                return true; 
+	public static final int V =5; 
+    public int count = 0; 
+      
+    public void DFS( boolean marked[], int length, int vert, int start) { 
+        
+        // mark the vertex vert as visited 
+        marked[vert] = true; 
+          
+        // if the path of length (n-1) is found 
+        if (length == 0) { 
+              
+            // mark vert as un-visited to  
+            // make it usable again 
+            marked[vert] = false; 
+              
+            // Check if vertex vert end  
+            // with vertex start 
+            if (ma[vert][start] == true) { 
+                count++; 
+                return; 
+            } else
+                return; 
+        }
+          
+        // For searching every possible
+        // path of length (n-1)
+        for (int i = 0; i < this.n; i++)
+            if (!marked[i] && ma[vert][i] == true)
+                 // DFS for searching path by 
+                // decreasing length by 1 
+                DFS( marked, length-1, i, start); 
+          
+        // marking vert as unvisited to make it 
+        // usable again 
+        marked[vert] = false; 
+    } 
+      
+    // Count cycles of length N in an  
+    // undirected and connected graph. 
+    public int contarCiclos( int length) {
+        // all vertex are marked un-visited 
+        // initially. 
+        boolean marked[] = new boolean[this.n];
+        // Searching for cycle by using  
+        // v-n+1 vertices 
+        for (int i = 0; i < this.n - (length - 1); i++) {
+            DFS( marked, length-1, i, i);
+            // ith vertex is marked as visited 
+            // and will not be visited again 
+            marked[i] = true;
+        }
+        return count / 2;  
+    }
+	
+//	verificar si el grafo tiene una estrucutra en estrella
+//	estrella() donde n= a la cantidad de vertices
+	public boolean esEstrella(){ 
+        // initialize number of  
+        // vertex with deg 1 and n-1 
+        int vertexD1 = 0,  
+            vertexDn_1 = 0; 
+        if(n==0)return true;
+        // check for S1 
+        if (n == 1) 
+            return (!ma[0][0]);
+          
+        // check for S2 
+        if (n == 2)
+        return (ma[0][0] == false &&  
+                ma[0][1] == true &&  
+                ma[1][0] == true && 
+                ma[1][1] == false); 
+      
+        // check for Sn (n>2) 
+        for (int i = 0; i < n; i++) { 
+            int degreeI = 0; 
+            for (int j = 0; j < n; j++) 
+                if (ma[i][j] == true) 
+                    degreeI++; 
+      
+            if (degreeI == 1) 
+                vertexD1++; 
+            else if (degreeI == n - 1) 
+                vertexDn_1++; 
+        } 
+          
+        return (vertexD1 == (n - 1) &&  
+                vertexDn_1 == 1); 
+    }
+	
+	public boolean esCompleto() {
+		if(this.n==0)return true;
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				if(get(i, j) == false)return false;
+		return true;
+	}
+	public GrafoDP getComplemento() {
+		GrafoDP grafoComp= new GrafoDP(this.n);
+		for (int i = 0; i < this.n; i++) {
+			grafoComp.insertarVertice( this.id[i] );
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if(get(i,j)==false) {
+					grafoComp.ma[i][j]=true;
+				}
 			}
 		}
-        return false;
+		return grafoComp;
 	}
+//	
+//	public GrafoDP subgrafo(List<String> vertices) {
+//		for (int i = 0; i < vertices.size(); i++) {
+//			String vx= vertices.get(i);
+//			
+//		}
+//	}
 }
